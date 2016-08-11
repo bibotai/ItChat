@@ -6,7 +6,6 @@ from Queue import Queue
 #消息入队
 class MsgInQueue():
     def __init__(self, queue):
-        threading.Thread.__init__(self)
         self.data=queue
     def putmsgqueue(self,msg):
         self.data.put(msg)
@@ -42,9 +41,60 @@ class MsgOutQueue2db(threading.Thread):
                     print m
                     #存入数据库
                     self.db.messages.insert(m)
+
                     time.sleep(1)
                 except  Exception, e:
                     print e
                     continue
             except  Exception, e:
                 continue
+
+class Storage2DB():
+   def __init__(self):
+        # 建立MongoDB连接
+        self.conn = MongoClient()
+        # 数据库
+        self.db = self.conn.wechatRobot
+   def storageGroupName(self,grouplist):
+       # 数据表
+       self.grouplist = self.db.grouplist
+       for item in  grouplist:
+           try:
+               #查询是否已保存这个群
+               one=self.db.grouplist.find_one({'username':item['UserName']})
+               if one==None:
+                   # 格式化群数据
+                   g = dict(username=item['UserName'],
+                            grouppy=item['PYQuanPin'],
+                            groupname=item['NickName'].encode('utf-8'),
+                            time=time.time()
+                            )
+                   print g
+                   # 存入数据库
+                   self.db.grouplist.insert(g)
+           except  Exception, e:
+               print e
+               continue
+
+   def GroupMsgStatistics(self,msg):
+        #查询对应的群
+        g=self.db.grouplist.find_one({'username':msg['FromUserName']})
+        print g
+        if g!=None:
+            #判断是否包含这个人的群信息
+            one=self.db.groupstatistics.find_one({'username':msg['ActualUserName'],'groupusername':msg['FromUserName']})
+            if one==None:
+                #新增这个人的信息
+                s = dict(
+                    username=msg['ActualUserName'],
+                    groupusername=msg['FromUserName'],
+                    nickname=msg['ActualNickName'].encode('utf-8'),
+                    groupname=g['groupname'],
+                    grouppy=g['grouppy'],
+                    msgcount=1
+                )
+                self.db.groupstatistics.insert(s)
+            else:
+                #更新统计信息
+                self.db.groupstatistics.update({'username':msg['ActualUserName'],'groupusername':msg['FromUserName']},
+                                      { '$inc' : { 'msgcount' : 1} })

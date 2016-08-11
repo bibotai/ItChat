@@ -3,6 +3,7 @@ import time
 import itchat
 from dbaccess.storage2db import MsgInQueue
 from dbaccess.storage2db import MsgOutQueue2db
+from dbaccess.storage2db import Storage2DB
 
 from Queue import Queue
 
@@ -39,20 +40,26 @@ def complex_reply():
 
     @itchat.msg_register('Text', isGroupChat = True)
     def text_reply(msg):
-        # print itchat.__client.storageClass.groupDict
-        print itchat.__client.storageClass.chatroomList
-        print msg
+        # print msg
         # 实例化入队类
         inqueue=MsgInQueue(queue)
         # 消息入队
         inqueue.putmsgqueue(msg)
+        # 存入统计信息
+        db = Storage2DB()
+        db.GroupMsgStatistics(msg)
         if msg['isAt']:
-            print msg
             itchat.send(u'@%s\u2005I received: %s'%(msg['ActualNickName'], msg['Content']), msg['FromUserName'])
 
     itchat.run()
 
+def initGroup():
+    groupList=itchat.__client.storageClass.chatroomList
+    db=Storage2DB()
+    db.storageGroupName(groupList)
+
 if __name__ == '__main__':
     itchat.auto_login(hotReload = True)
+    initGroup()
     # simple_reply()
     complex_reply()
