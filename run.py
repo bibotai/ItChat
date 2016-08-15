@@ -37,7 +37,7 @@ def complex_reply():
         itchat.add_friend(**msg['Text'])
         itchat.get_contract()
         itchat.send('Nice to meet you!', msg['RecommendInfo']['UserName'])
-
+    #处理群文字消息
     @itchat.msg_register('Text', isGroupChat = True)
     def text_reply(msg):
         # print msg
@@ -50,6 +50,26 @@ def complex_reply():
         db.GroupMsgStatistics(msg)
         if msg['isAt']:
             itchat.send(u'@%s\u2005I received: %s'%(msg['ActualNickName'], msg['Content']), msg['FromUserName'])
+
+    @itchat.msg_register('Map',isGroupChat=True)
+    def map_reply(msg):
+        print msg
+        inqueue = MsgInQueue(queue)
+        inqueue.putmsgqueue(msg)
+        # 存入统计信息
+        db = Storage2DB()
+        db.GroupMsgStatistics(msg)
+        itchat.send(u'@%s\u2005你是不是在这里!%s' % (msg['ActualNickName'],msg['Content']), msg['FromUserName'])
+
+    @itchat.msg_register('Note', isGroupChat=True)
+    def map_reply(msg):
+        print msg
+        inqueue = MsgInQueue(queue)
+        inqueue.putmsgqueue(msg)
+        # 存入统计信息
+        # db = Storage2DB()
+        # db.GroupMsgStatistics(msg)
+        itchat.send(u'\u2005%s' % (msg['Content']), msg['FromUserName'])
 
     itchat.run()
 

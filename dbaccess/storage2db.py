@@ -38,7 +38,7 @@ class MsgOutQueue2db(threading.Thread):
                              message=msg['Content'].encode('utf-8'),
                              messagetype=msg['MsgType']
                              )
-                    print m
+                    # print m
                     #存入数据库
                     self.db.messages.insert(m)
 
@@ -79,22 +79,22 @@ class Storage2DB():
    def GroupMsgStatistics(self,msg):
         #查询对应的群
         g=self.db.grouplist.find_one({'username':msg['FromUserName']})
-        print g
+        # print g
         if g!=None:
-            #判断是否包含这个人的群信息
-            one=self.db.groupstatistics.find_one({'username':msg['ActualUserName'],'groupusername':msg['FromUserName']})
+            #判断是否包含这个人的群信息(个人的昵称和群拼音)
+            one=self.db.groupstatistics.find_one({'nickname':msg['ActualNickName'],'grouppy':g['grouppy']})
             if one==None:
                 #新增这个人的信息
                 s = dict(
-                    username=msg['ActualUserName'],
-                    groupusername=msg['FromUserName'],
                     nickname=msg['ActualNickName'].encode('utf-8'),
                     groupname=g['groupname'],
                     grouppy=g['grouppy'],
                     msgcount=1
                 )
+                s[msg['Type']]=1
+                # print s
                 self.db.groupstatistics.insert(s)
             else:
                 #更新统计信息
-                self.db.groupstatistics.update({'username':msg['ActualUserName'],'groupusername':msg['FromUserName']},
-                                      { '$inc' : { 'msgcount' : 1} })
+                self.db.groupstatistics.update({'nickname':msg['ActualNickName'],'grouppy':g['grouppy']},
+                                      { '$inc' : { 'msgcount' : 1,msg['Type']:1} },True)
