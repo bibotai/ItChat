@@ -4,6 +4,7 @@ import itchat
 from dbaccess.storage2db import MsgInQueue
 from dbaccess.storage2db import MsgOutQueue2db
 from dbaccess.storage2db import Storage2DB
+from dbaccess.selectdb import GetMsg
 
 from Queue import Queue
 
@@ -50,26 +51,70 @@ def complex_reply():
         db.GroupMsgStatistics(msg)
         if msg['isAt']:
             itchat.send(u'@%s\u2005I received: %s'%(msg['ActualNickName'], msg['Content']), msg['FromUserName'])
-
+    #处理位置消息
     @itchat.msg_register('Map',isGroupChat=True)
     def map_reply(msg):
-        print msg
-        inqueue = MsgInQueue(queue)
-        inqueue.putmsgqueue(msg)
-        # 存入统计信息
-        db = Storage2DB()
-        db.GroupMsgStatistics(msg)
-        itchat.send(u'@%s\u2005你是不是在这里!%s' % (msg['ActualNickName'],msg['Content']), msg['FromUserName'])
-
+        try:
+            print msg
+            inqueue = MsgInQueue(queue)
+            inqueue.putmsgqueue(msg)
+            index=msg['Content'].find(':')
+            msg['Content']=msg[0:index]
+            # 存入统计信息
+            db = Storage2DB()
+            db.GroupMsgStatistics(msg)
+            itchat.send(u'@%s\u2005你是不是在这里!%s' % (msg['ActualNickName'],msg['Content']), msg['FromUserName'])
+        except  Exception, e:
+            print e
+    #处理系统消息
     @itchat.msg_register('Note', isGroupChat=True)
     def map_reply(msg):
         print msg
         inqueue = MsgInQueue(queue)
         inqueue.putmsgqueue(msg)
+        #新人入群
+        indexs=msg['Content'].find(u'邀请')
+        indexe=msg['Content'].find(u'加入')
+        if(indexs>0):
+            print  indexs
+            print  indexe
+            newmembername=msg['Content'][indexs+2:indexe]
+            itchat.send(u'\u2005欢迎新人"%s"入群👏👏' % (newmembername), msg['FromUserName'])
+            time.sleep(1)
+            # Todo:新人引导
+            itchat.send(u'\u2005@%s 新人指导:.......todo' % (newmembername), msg['FromUserName'])
+        else:
+            #撤回
+            if(msg['MsgType']==10002):
+                # 存入统计信息
+                db = Storage2DB()
+                db.GroupMsgStatistics(msg)
+                dbmsg = GetMsg()
+                msgs = dbmsg.getLastMsgByUsernameGroupusername(msg['ActualUserName'],msg['FromUserName'], 3)
+                itchat.send(u'\u2005@%s 撤回了一条消息,最近的三条消息是:' % (msg['ActualNickName']), msg['FromUserName'])
+                time.sleep(1)
+                for item in msgs:
+                    print item
+                    if(item['type']=='Picture' or item['type']=='Recording' or item['type']=='Recording' or item['type']=='Video'):
+                        itchat.send('@%s@%s' % ('img' if item['type'] == 'Picture' else 'fil', item['message']),
+                                    msg['FromUserName'])
+                    else:
+                        itchat.send(u'\u2005%s ' % (item['message']), msg['FromUserName'])
+                    time.sleep(1)
+        #处理图片,语音,视频,附件
+    @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
+    def download_files(msg):
+        fileDir = 'storage/picture/%s%s' % (msg['Type'], int(time.time()))
+        msg['Content']=fileDir
+        inqueue = MsgInQueue(queue)
+        inqueue.putmsgqueue(msg)
         # 存入统计信息
-        # db = Storage2DB()
-        # db.GroupMsgStatistics(msg)
-        itchat.send(u'\u2005%s' % (msg['Content']), msg['FromUserName'])
+        db = Storage2DB()
+        db.GroupMsgStatistics(msg)
+        msg['Text'](fileDir)
+        # Todo:斗图
+        # itchat.send('%s received' % msg['Type'], msg['FromUserName'])
+        # itchat.send('@%s@%s' % ('img' if msg['Type'] == 'Picture' else 'fil', fileDir), msg['FromUserName'])
 
     itchat.run()
 

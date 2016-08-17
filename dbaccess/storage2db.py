@@ -36,7 +36,8 @@ class MsgOutQueue2db(threading.Thread):
                              username=msg['ActualUserName'],
                              usernickname=msg['ActualNickName'].encode('utf-8'),
                              message=msg['Content'].encode('utf-8'),
-                             messagetype=msg['MsgType']
+                             messagetype=msg['MsgType'],
+                             type=msg['Type']
                              )
                     # print m
                     #存入数据库
