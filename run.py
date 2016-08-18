@@ -5,6 +5,7 @@ from dbaccess.storage2db import MsgInQueue
 from dbaccess.storage2db import MsgOutQueue2db
 from dbaccess.storage2db import Storage2DB
 from dbaccess.selectdb import GetMsg
+import tools.msghandle
 
 from Queue import Queue
 
@@ -99,7 +100,9 @@ def complex_reply():
                         itchat.send('@%s@%s' % ('img' if item['type'] == 'Picture' else 'fil', item['message']),
                                     msg['FromUserName'])
                     else:
-                        itchat.send(u'\u2005%s ' % (item['message']), msg['FromUserName'])
+                        hanmsg=tools.msghandle.HandleMsg()
+                        remsg=hanmsg.splitlongmsg(item['message'])
+                        itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
                     time.sleep(1)
         #处理图片,语音,视频,附件
     @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
