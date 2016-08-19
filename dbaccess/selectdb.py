@@ -11,5 +11,8 @@ class GetMsg():
     def getLastMsgByUsernameGroupusername(self,username,groupname,limit):
         msgs=self.db.messages.find({"$and": [{"username": username},
                                              {"groupname":groupname},
-                                             {"type": {"$ne": "Note"}}]}).sort([('time', -1)]).limit(3)
+                                             {"type": {"$ne": "Note"}}]}).sort([('time', -1)]).limit(limit)
         return msgs
+    def getDefaultMsgByMsgFlag(self,flag):
+        msg=self.db.defaultmsg.find_one({'msgflag':flag})
+        return msg

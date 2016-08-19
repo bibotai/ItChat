@@ -42,7 +42,9 @@ class MsgOutQueue2db(threading.Thread):
                     # print m
                     #存入数据库
                     self.db.messages.insert(m)
-
+                    # 存入统计信息
+                    db = Storage2DB()
+                    db.GroupMsgStatistics(msg)
                     time.sleep(1)
                 except  Exception, e:
                     print e

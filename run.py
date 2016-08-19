@@ -34,11 +34,18 @@ def complex_reply():
         itchat.send('%s received'%msg['Type'], msg['FromUserName'])
         itchat.send('@%s@%s'%('img' if msg['Type'] == 'Picture' else 'fil', fileDir), msg['FromUserName'])
 
-    @itchat.msg_register('Friends')
-    def add_friend(msg):
-        itchat.add_friend(**msg['Text'])
-        itchat.get_contract()
-        itchat.send('Nice to meet you!', msg['RecommendInfo']['UserName'])
+    # @itchat.msg_register('Friends')
+    # def add_friend(msg):
+    #     itchat.add_friend(**msg['Text'])
+    #     itchat.get_contract()
+    #     itchat.send('Nice to meet you!', msg['RecommendInfo']['UserName'])
+
+
+    #群
+
+
+
+
     #处理群文字消息
     @itchat.msg_register('Text', isGroupChat = True)
     def text_reply(msg):
@@ -47,11 +54,19 @@ def complex_reply():
         inqueue=MsgInQueue(queue)
         # 消息入队
         inqueue.putmsgqueue(msg)
-        # 存入统计信息
-        db = Storage2DB()
-        db.GroupMsgStatistics(msg)
         if msg['isAt']:
-            itchat.send(u'@%s\u2005I received: %s'%(msg['ActualNickName'], msg['Content']), msg['FromUserName'])
+            try:
+                import plugin.tuling as tuling
+                r = tuling.get_response(msg['Content'])
+                itchat.send(u'\u2005%s' % (r), msg['FromUserName'])
+            except        Exception, e:
+                print e
+        else:
+            # 处理特定字符串
+            hanmsg = tools.msghandle.HandleMsg()
+            remsg = hanmsg.defaultmsghandle(msg['Content'])
+            if(remsg!=''):
+                itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
     #处理位置消息
     @itchat.msg_register('Map',isGroupChat=True)
     def map_reply(msg):
@@ -61,38 +76,34 @@ def complex_reply():
             inqueue.putmsgqueue(msg)
             index=msg['Content'].find(':')
             msg['Content']=msg[0:index]
-            # 存入统计信息
-            db = Storage2DB()
-            db.GroupMsgStatistics(msg)
             itchat.send(u'@%s\u2005你是不是在这里!%s' % (msg['ActualNickName'],msg['Content']), msg['FromUserName'])
         except  Exception, e:
             print e
     #处理系统消息
     @itchat.msg_register('Note', isGroupChat=True)
     def map_reply(msg):
-        print msg
-        inqueue = MsgInQueue(queue)
-        inqueue.putmsgqueue(msg)
-        #新人入群
-        indexs=msg['Content'].find(u'邀请')
-        indexe=msg['Content'].find(u'加入')
-        if(indexs>0):
-            print  indexs
-            print  indexe
-            newmembername=msg['Content'][indexs+2:indexe]
-            itchat.send(u'\u2005欢迎新人"%s"入群👏👏' % (newmembername), msg['FromUserName'])
-            time.sleep(1)
-            # Todo:新人引导
-            itchat.send(u'\u2005@%s 新人指导:.......todo' % (newmembername), msg['FromUserName'])
+        try:
+            inqueue = MsgInQueue(queue)
+            inqueue.putmsgqueue(msg)
+            #新人入群
+            indexs=msg['Content'].find(u'邀请')
+            indexe=msg['Content'].find(u'加入')
+            if(indexs>0):
+                print  indexs
+                print  indexe
+                newmembername=msg['Content'][indexs+2:indexe]
+                itchat.send(u'\u2005欢迎新人"%s"入群👏👏' % (newmembername), msg['FromUserName'])
+                time.sleep(1)
+                # Todo:新人引导
+                itchat.send(u'\u2005@%s 新人指导:.......todo' % (newmembername), msg['FromUserName'])
+        except  Exception, e:
+            print e
         else:
             #撤回
             if(msg['MsgType']==10002):
-                # 存入统计信息
-                db = Storage2DB()
-                db.GroupMsgStatistics(msg)
                 dbmsg = GetMsg()
-                msgs = dbmsg.getLastMsgByUsernameGroupusername(msg['ActualUserName'],msg['FromUserName'], 3)
-                itchat.send(u'\u2005@%s 撤回了一条消息,最近的三条消息是:' % (msg['ActualNickName']), msg['FromUserName'])
+                msgs = dbmsg.getLastMsgByUsernameGroupusername(msg['ActualUserName'],msg['FromUserName'], 1)
+                itchat.send(u'\u2005@%s 撤回了一条消息,最近的一条消息是:' % (msg['ActualNickName']), msg['FromUserName'])
                 time.sleep(1)
                 for item in msgs:
                     print item
@@ -107,7 +118,16 @@ def complex_reply():
         #处理图片,语音,视频,附件
     @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
     def download_files(msg):
-        fileDir = 'storage/picture/%s%s' % (msg['Type'], int(time.time()))
+        dir=''
+        if(msg['Type']=='Picture'):
+            dir='picture'
+        elif(msg['Type']=='Recording'):
+            dir = 'recording'
+        elif(msg['Type']=='Attachment'):
+            dir = 'attachment'
+        elif(msg['Type']=='Video'):
+            dir = 'video'
+        fileDir = 'storage/%s/%s%s' % (dir,msg['Type'], int(time.time()))
         msg['Content']=fileDir
         inqueue = MsgInQueue(queue)
         inqueue.putmsgqueue(msg)
