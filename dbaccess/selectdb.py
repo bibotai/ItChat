@@ -12,7 +12,12 @@ class GetMsg():
         msgs=self.db.messages.find({"$and": [{"username": username},
                                              {"groupname":groupname},
                                              {"type": {"$ne": "Note"}}]}).sort([('time', -1)]).limit(limit)
-        return msgs
+
+    def getrevokemsg(self,username,groupname,msgid):
+        msg=self.db.messages.find_one({"$and": [{"username": username},
+                                      {"groupname": groupname},
+                                      {"msgid":msgid}]})
+        return msg
     def getDefaultMsgByMsgFlag(self,flag):
         msg=self.db.defaultmsg.find_one({'msgflag':flag})
         return msg

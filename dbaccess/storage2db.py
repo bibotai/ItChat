@@ -9,7 +9,7 @@ class MsgInQueue():
         self.data=queue
     def putmsgqueue(self,msg):
         self.data.put(msg)
-        print 'put msg in queue success:'+msg['Content']
+        # print 'put msg in queue success:'+msg['Content']
 
 #消息出队并存入数据库
 class MsgOutQueue2db(threading.Thread):
@@ -28,7 +28,7 @@ class MsgOutQueue2db(threading.Thread):
                 # print self.data
                 #从队列里取消息
                 msg = self.data.get(1, 5)  # get(self, block=True, timeout=None) ,1就是阻塞等待,5是超时5秒
-                print "%s: %s get %s from queue !" % (time.ctime(), self.getName(), msg['Content'].encode('utf-8'))
+                # print "%s: %s get %s from queue !" % (time.ctime(), self.getName(), msg['Content'].encode('utf-8'))
                 try:
                     #格式化消息数据
                     m = dict(groupname=msg['FromUserName'].encode('utf-8'),
@@ -37,7 +37,8 @@ class MsgOutQueue2db(threading.Thread):
                              usernickname=msg['ActualNickName'].encode('utf-8'),
                              message=msg['Content'].encode('utf-8'),
                              messagetype=msg['MsgType'],
-                             type=msg['Type']
+                             type=msg['Type'],
+                             msgid=msg['MsgId']
                              )
                     # print m
                     #存入数据库

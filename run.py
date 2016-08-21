@@ -6,6 +6,7 @@ from dbaccess.storage2db import MsgOutQueue2db
 from dbaccess.storage2db import Storage2DB
 from dbaccess.selectdb import GetMsg
 import tools.msghandle
+import xml.etree.ElementTree as Etree
 
 from Queue import Queue
 
@@ -71,7 +72,7 @@ def complex_reply():
     @itchat.msg_register('Map',isGroupChat=True)
     def map_reply(msg):
         try:
-            print msg
+            # print msg
             inqueue = MsgInQueue(queue)
             inqueue.putmsgqueue(msg)
             index=msg['Content'].find(':')
@@ -100,24 +101,35 @@ def complex_reply():
             print e
         else:
             #撤回
-            if(msg['MsgType']==10002):
-                dbmsg = GetMsg()
-                msgs = dbmsg.getLastMsgByUsernameGroupusername(msg['ActualUserName'],msg['FromUserName'], 1)
-                itchat.send(u'\u2005@%s 撤回了一条消息,最近的一条消息是:' % (msg['ActualNickName']), msg['FromUserName'])
-                time.sleep(1)
-                for item in msgs:
-                    print item
-                    if(item['type']=='Picture' or item['type']=='Recording' or item['type']=='Recording' or item['type']=='Video'):
-                        itchat.send('@%s@%s' % ('img' if item['type'] == 'Picture' else 'fil', item['message']),
-                                    msg['FromUserName'])
-                    else:
-                        hanmsg=tools.msghandle.HandleMsg()
-                        remsg=hanmsg.splitlongmsg(item['message'])
-                        itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
-                    time.sleep(1)
+            # try:
+                if(msg['MsgType']==10002):
+                    # print msg
+                    dbmsg = GetMsg()
+                    data_tree = Etree.fromstring(msg['Content'].encode('utf-8'))
+                    print data_tree
+                    msgid = data_tree.find('revokemsg/msgid').text
+                    print msg['ActualUserName'],msg['FromUserName'],msgid
+                    revokmsg=dbmsg.getrevokemsg(msg['ActualUserName'],msg['FromUserName'],msgid)
+                    print revokmsg
+                    if(revokmsg!=None):
+                        if (revokmsg['type'] == 'Picture' or revokmsg['type'] == 'Recording' or
+                                    revokmsg['type'] == 'Recording' or revokmsg['type'] == 'Video'):
+
+                            itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:' % (msg['ActualNickName']), msg['FromUserName'])
+                            time.sleep(1)
+                            print revokmsg['message'],revokmsg['type']
+                            itchat.send('@%s@%s' % ('img' if revokmsg['type'] == 'Picture' else 'fil', revokmsg['message']),
+                                        msg['FromUserName'])
+                        else:
+                            hanmsg=tools.msghandle.HandleMsg()
+                            remsg=hanmsg.splitlongmsg(revokmsg['message'])
+                            itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:%s ' % (msg['ActualNickName'],remsg), msg['FromUserName'])
+            # except  Exception, e:
+            #     print e
         #处理图片,语音,视频,附件
     @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
     def download_files(msg):
+        #print msg
         dir=''
         if(msg['Type']=='Picture'):
             dir='picture'
@@ -128,6 +140,7 @@ def complex_reply():
         elif(msg['Type']=='Video'):
             dir = 'video'
         fileDir = 'storage/%s/%s%s' % (dir,msg['Type'], int(time.time()))
+        print fileDir
         msg['Content']=fileDir
         inqueue = MsgInQueue(queue)
         inqueue.putmsgqueue(msg)
