@@ -101,7 +101,7 @@ def complex_reply():
             print e
         else:
             #撤回
-            # try:
+            try:
                 if(msg['MsgType']==10002):
                     # print msg
                     dbmsg = GetMsg()
@@ -113,7 +113,7 @@ def complex_reply():
                     print revokmsg
                     if(revokmsg!=None):
                         if (revokmsg['type'] == 'Picture' or revokmsg['type'] == 'Recording' or
-                                    revokmsg['type'] == 'Recording' or revokmsg['type'] == 'Video'):
+                                    revokmsg['type'] == 'Attachment' or revokmsg['type'] == 'Video'):
 
                             itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:' % (msg['ActualNickName']), msg['FromUserName'])
                             time.sleep(1)
@@ -124,8 +124,8 @@ def complex_reply():
                             hanmsg=tools.msghandle.HandleMsg()
                             remsg=hanmsg.splitlongmsg(revokmsg['message'])
                             itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:%s ' % (msg['ActualNickName'],remsg), msg['FromUserName'])
-            # except  Exception, e:
-            #     print e
+            except  Exception, e:
+                print e
         #处理图片,语音,视频,附件
     @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
     def download_files(msg):
