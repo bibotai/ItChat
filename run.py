@@ -127,7 +127,7 @@ def complex_reply():
                             itchat.send('@%s@%s' % ('img' if revokmsg['type'] == 'Picture' else 'fil', revokmsg['message']),
                                         msg['FromUserName'])
                         else:
-                            hanmsg=tools.msgandle.HandleMsg()
+                            hanmsg=tools.msgHandle.HandleMsg()
                             remsg=hanmsg.splitlongmsg(revokmsg['message'])
                             itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:%s ' % (msg['ActualNickName'],remsg), msg['FromUserName'])
             except  Exception, e:
