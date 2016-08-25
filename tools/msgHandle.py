@@ -23,7 +23,7 @@ class HandleMsg():
                 print item
                 content=content+u'第%s名:%s,共发消息:%s条\n'%(i,item['nickname'],item['msgcount'])
                 i=i+1
-            print content
+            # print content
             return content
         elif (u'#谁最爱发图' in msg['Content']):
             objstat = statistics()
@@ -34,6 +34,36 @@ class HandleMsg():
                 print item
                 try:
                     content = content + u'第%s名:%s,共发图片消息:%s条\n' % (i, item['nickname'], item['Picture'])
+                    i = i + 1
+                except  Exception, e:
+                    print e
+                    break
+            # print content
+            return content
+        elif (u'#谁最爱发语音' in msg['Content']):
+            objstat = statistics()
+            statist = objstat.getStatisticsbyGroupandType(msg, 'rec')
+            i = 1
+            content = ''
+            for item in statist:
+                print item
+                try:
+                    content = content + u'第%s名:%s,共发语音消息:%s条\n' % (i, item['nickname'], item['Recording'])
+                    i = i + 1
+                except  Exception, e:
+                    print e
+                    break
+            print content
+            return content
+        elif (u'#谁最爱发视频' in msg['Content']):
+            objstat = statistics()
+            statist = objstat.getStatisticsbyGroupandType(msg, '')
+            i = 1
+            content = ''
+            for item in statist:
+                print item
+                try:
+                    content = content + u'第%s名:%s,共发视频消息:%s条\n' % (i, item['nickname'], item['Video'])
                     i = i + 1
                 except  Exception, e:
                     print e

@@ -55,10 +55,11 @@ def complex_reply():
         inqueue=MsgInQueue(queue)
         # 消息入队
         inqueue.putmsgqueue(msg)
-        if msg['isAt']:
+        nickname = itchat.__client.storageClass.nickName
+        if msg['isAt'] or '@%s'%(nickname) in msg['Content']:
             try:
                 import plugin.tuling as tuling
-                r = tuling.get_response(msg['Content'])
+                r = tuling.get_response(msg['Content'].replace('@%s'%(nickname),'').strip())
                 itchat.send(u'\u2005%s' % (r), msg['FromUserName'])
             except        Exception, e:
                 print e
@@ -68,6 +69,7 @@ def complex_reply():
             hanmsg = tools.msghandle.HandleMsg()
             remsg = hanmsg.defaultmsghandle(msg)
             if(remsg!=''):
+                print 'if(remsg!=''):'
                 itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
     #处理位置消息
     @itchat.msg_register('Map',isGroupChat=True)

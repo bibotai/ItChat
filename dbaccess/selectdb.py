@@ -39,3 +39,9 @@ class statistics():
             if(type=='pic'):
                 stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('Picture', -1)]).limit(20)
                 return stat
+            if (type == 'rec'):
+                stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('Recording', -1)]).limit(20)
+                return stat
+            if (type == 'video'):
+                stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('Video', -1)]).limit(20)
+                return stat
