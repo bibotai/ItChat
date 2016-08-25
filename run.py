@@ -66,11 +66,14 @@ def complex_reply():
 
         else:
             # 处理特定字符串
-            hanmsg = tools.msghandle.HandleMsg()
-            remsg = hanmsg.defaultmsghandle(msg)
-            if(remsg!=''):
-                print 'if(remsg!=''):'
-                itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
+            try:
+                hanmsg = tools.msgHandle.HandleMsg()
+                remsg = hanmsg.defaultmsghandle(msg)
+                if(remsg!=''):
+                    print 'if(remsg!=''):'
+                    itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
+            except        Exception, e:
+                print e
     #处理位置消息
     @itchat.msg_register('Map',isGroupChat=True)
     def map_reply(msg):
