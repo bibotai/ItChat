@@ -21,3 +21,21 @@ class GetMsg():
     def getDefaultMsgByMsgFlag(self,flag):
         msg=self.db.defaultmsg.find_one({'msgflag':flag})
         return msg
+
+class statistics():
+    def __init__(self):
+        # 建立MongoDB连接
+        self.conn = MongoClient()
+        # 数据库
+        self.db = self.conn.wechatRobot
+    def getStatisticsbyGroupandType(self,msg,type):
+        # 查询对应的群
+        print msg
+        g = self.db.grouplist.find_one({'username': msg['FromUserName']})
+        if g != None:
+            if(type=='all'):
+                stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('msgcount', -1)]).limit(20)
+                return stat
+            if(type=='pic'):
+                stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('Picture', -1)]).limit(20)
+                return stat

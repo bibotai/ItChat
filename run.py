@@ -62,10 +62,11 @@ def complex_reply():
                 itchat.send(u'\u2005%s' % (r), msg['FromUserName'])
             except        Exception, e:
                 print e
+
         else:
             # 处理特定字符串
             hanmsg = tools.msghandle.HandleMsg()
-            remsg = hanmsg.defaultmsghandle(msg['Content'])
+            remsg = hanmsg.defaultmsghandle(msg)
             if(remsg!=''):
                 itchat.send(u'\u2005%s ' % (remsg), msg['FromUserName'])
     #处理位置消息
@@ -126,7 +127,7 @@ def complex_reply():
                             itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:%s ' % (msg['ActualNickName'],remsg), msg['FromUserName'])
             except  Exception, e:
                 print e
-        #处理图片,语音,视频,附件
+    #处理图片,语音,视频,附件
     @itchat.msg_register(['Picture', 'Recording', 'Attachment', 'Video'], isGroupChat=True)
     def download_files(msg):
         #print msg
