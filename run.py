@@ -5,7 +5,7 @@ from dbaccess.storage2db import MsgInQueue
 from dbaccess.storage2db import MsgOutQueue2db
 from dbaccess.storage2db import Storage2DB
 from dbaccess.selectdb import GetMsg
-import tools.msghandle
+import tools.msgHandle
 import xml.etree.ElementTree as Etree
 
 from Queue import Queue
@@ -99,7 +99,7 @@ def complex_reply():
                 itchat.send(u'\u2005欢迎新人"%s"入群👏👏' % (newmembername), msg['FromUserName'])
                 time.sleep(1)
                 # Todo:新人引导
-                itchat.send(u'\u2005@%s 新人指导:.......todo' % (newmembername), msg['FromUserName'])
+                itchat.send(u'\u2005@%s 新人指导:稍后添加！' % (newmembername), msg['FromUserName'])
         except  Exception, e:
             print e
         else:
