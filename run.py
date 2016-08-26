@@ -165,7 +165,7 @@ def initGroup():
     db.InitDefaultMessage()
 
 if __name__ == '__main__':
-    itchat.auto_login(hotReload = True)
+    itchat.auto_login(hotReload = True,enableCmdQR=2)
     initGroup()
     # simple_reply()
     complex_reply()
