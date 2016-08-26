@@ -85,20 +85,63 @@ class Storage2DB():
         g=self.db.grouplist.find_one({'username':msg['FromUserName']})
         # print g
         if g!=None:
-            #判断是否包含这个人的群信息(个人的昵称和群拼音)
-            one=self.db.groupstatistics.find_one({'nickname':msg['ActualNickName'],'grouppy':g['grouppy']})
-            if one==None:
-                #新增这个人的信息
-                s = dict(
-                    nickname=msg['ActualNickName'].encode('utf-8'),
-                    groupname=g['groupname'],
-                    grouppy=g['grouppy'],
-                    msgcount=1
-                )
-                s[msg['Type']]=1
-                # print s
-                self.db.groupstatistics.insert(s)
-            else:
-                #更新统计信息
-                self.db.groupstatistics.update({'nickname':msg['ActualNickName'],'grouppy':g['grouppy']},
-                                      { '$inc' : { 'msgcount' : 1,msg['Type']:1} },True)
+            #更新统计信息
+            self.db.groupstatistics.update({'nickname':msg['ActualNickName'],'grouppy':g['grouppy']},
+                                  { '$inc' : { 'msgcount' : 1,msg['Type']:1} },True)
+
+   def InitDefaultMessage(self):
+        m1=self.db.defaultmsg.find_one({'msgflag': 'help'})
+        if m1==None:
+            m= dict(msgflag='help',
+                    content='小图群聊机器\n'+
+                            '支持功能：\n'+
+                            '*生活助手类*\n'+
+                            '***注意，此类别的所有消息均要@我发送！***\n'+
+                            '1、聊天：@我并加入聊天内容\n'+
+                            '2、找图片:如小狗图片，要包含“图片”\n'+
+                            '3、找新闻:如今日新闻，要包含“新闻”\n'+
+                            '4、查列车:如6月1号深圳到厦门的列车，时间+出发地+目的地\n'+
+                            '5、查航班:如6月1号深圳到上海的飞机，同上\n'+
+                            '6、查菜谱:如土豆焖鸡怎么做\n'+
+                            '7、查快递:如顺丰 12345678\n'+
+                            '8、查天气:如北京天气\n'+
+                            '9、成语接龙:如成语接龙\n'+
+                            '更多功能自己发现😂\n'+
+                            '*防撤回类*\n'+
+                            '文字,图片,视频,附件均可防撤回\n'+
+                            '*群聊统计类*\n'+
+                            '1、#谁最能聊\n'+
+                            '2、#谁最爱发图\n' +
+                            '3、#谁最爱发语音\n' +
+                            '4、#谁最爱发视频\n'
+                    )
+            self.db.defaultmsg.insert(m)
+
+        m2=self.db.defaultmsg.find_one({'grouppy': 'ichunqiuxinxianquanmofaxueyuan'})
+        if m2==None:
+            m= dict(grouppy='ichunqiuxinxianquanmofaxueyuan',
+                    newmember='这里是"i春秋-信息安全魔法学院"\n'+
+                    '进群发红包，发果照，报三围。\n'+
+                    '温馨提示:请给手机多充一点流量。\n\n'+
+                    '关注i春秋微信公众号icqedu'+
+                    '关注i春秋微博@i春秋学院' +
+                    '注册成为i春秋会员：www.ichunqiu.com/mobile'
+                    )
+            self.db.defaultmsg.insert(m)
+        m3 = self.db.defaultmsg.find_one({'grouppy': 'zuosiceshiqun'})
+        if m3 == None:
+            m = dict(grouppy='zuosiceshiqun',
+                     newmember='这里是作死测试群"\n'
+                     )
+            self.db.defaultmsg.insert(m)
+        m4 = self.db.defaultmsg.find_one({'grouppy': 'baimaohuishililiaomeijiaoxuequn'})
+        if m4 == None:
+            m = dict(grouppy='baimaohuishililiaomeijiaoxuequn',
+                     newmember='这里是【白帽汇】实力撩妹教学群"\n' +
+                               '进群发红包，发果照，报三围。\n' +
+                               '缪缪是世界上最漂亮的人。\n\n' +
+                               '缪缪是最强王者!'
+                     )
+            self.db.defaultmsg.insert(m)
+
+

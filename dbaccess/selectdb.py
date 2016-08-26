@@ -22,6 +22,13 @@ class GetMsg():
         msg=self.db.defaultmsg.find_one({'msgflag':flag})
         return msg
 
+    def getDefaultGroupMsg(self, msg, type):
+        g = self.db.grouplist.find_one({'username': msg['FromUserName']})
+        if g != None:
+            m = self.db.defaultmsg.find_one({"grouppy": g['grouppy']})
+            if m != None:
+                return m[type]
+
 class statistics():
     def __init__(self):
         # 建立MongoDB连接
@@ -45,3 +52,5 @@ class statistics():
             if (type == 'video'):
                 stat = self.db.groupstatistics.find({'grouppy': g['grouppy']}).sort([('Video', -1)]).limit(20)
                 return stat
+
+

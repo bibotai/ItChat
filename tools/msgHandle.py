@@ -72,3 +72,7 @@ class HandleMsg():
             return content
         else:
             return ''
+
+    def defaultgroupmsghandle(self,msg,type):
+        dbmsg = GetMsg()
+        return dbmsg.getDefaultGroupMsg(msg,type)

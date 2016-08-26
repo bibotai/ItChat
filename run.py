@@ -101,8 +101,9 @@ def complex_reply():
                 newmembername=msg['Content'][indexs+2:indexe]
                 itchat.send(u'\u2005欢迎新人"%s"入群👏👏' % (newmembername), msg['FromUserName'])
                 time.sleep(1)
-                # Todo:新人引导
-                itchat.send(u'\u2005@%s 新人指导:稍后添加！' % (newmembername), msg['FromUserName'])
+                hanmsg = tools.msgHandle.HandleMsg()
+                m=hanmsg.defaultgroupmsghandle(msg,'newmember')
+                itchat.send(u'\u2005@%s %s' % (newmembername,m), msg['FromUserName'])
         except  Exception, e:
             print e
         else:
@@ -150,9 +151,6 @@ def complex_reply():
         msg['Content']=fileDir
         inqueue = MsgInQueue(queue)
         inqueue.putmsgqueue(msg)
-        # 存入统计信息
-        db = Storage2DB()
-        db.GroupMsgStatistics(msg)
         msg['Text'](fileDir)
         # Todo:斗图
         # itchat.send('%s received' % msg['Type'], msg['FromUserName'])
@@ -164,9 +162,10 @@ def initGroup():
     groupList=itchat.__client.storageClass.chatroomList
     db=Storage2DB()
     db.storageGroupName(groupList)
+    db.InitDefaultMessage()
 
 if __name__ == '__main__':
-    itchat.auto_login(hotReload = True,enableCmdQR=2)
+    itchat.auto_login(hotReload = True)
     initGroup()
     # simple_reply()
     complex_reply()
