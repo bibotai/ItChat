@@ -122,7 +122,7 @@ def complex_reply():
                                     revokmsg['type'] == 'Attachment' or revokmsg['type'] == 'Video'):
 
                             itchat.send(u'\u2005@%s 撤回了一条消息,撤回的消息是:' % (msg['ActualNickName']), msg['FromUserName'])
-                            time.sleep(1)
+                            time.sleep(2)
                             print revokmsg['message'],revokmsg['type']
                             itchat.send('@%s@%s' % ('img' if revokmsg['type'] == 'Picture' else 'fil', revokmsg['message']),
                                         msg['FromUserName'])
