@@ -93,7 +93,7 @@ class Storage2DB():
         m1=self.db.defaultmsg.find_one({'msgflag': 'help'})
         if m1==None:
             m= dict(msgflag='help',
-                    content='小图群聊机器\n'+
+                    content='小图群聊机器人\n'+
                             '支持功能：\n'+
                             '*生活助手类*\n'+
                             '***注意，此类别的所有消息均要@我发送！***\n'+
