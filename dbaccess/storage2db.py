@@ -151,12 +151,21 @@ class Storage2DB():
                                '欢迎去SOBUG提交漏洞!https://www.sobug.com'
                      )
             self.db.defaultmsg.insert(m)
-        m5 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuanyanzhidandangqunspanclassemojiemoji1f493span'})
-        if m5 == None:
+        m6 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuanyanzhidandangqunspanclassemojiemoji1f493span'})
+        if m6 == None:
             m = dict(grouppy='anquanjuanyanzhidandangqunspanclassemojiemoji1f493span',
                      newmember='这里是 安全圈颜值担当群💓"\n' +
                                '进群发红包，发果照，报三围。\n\n' +
                                '文明聊(yue)天(pao)'
+                     )
+            self.db.defaultmsg.insert(m)
+        m7 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuanyanzhidandangqunspanclassemojiemoji1f493span'})
+        if m7 == None:
+            m = dict(grouppy='anquanjuandeanquan2qun',
+                     newmember='这里是 安全圈的安全2群💓"\n' +
+                               '进群发红包，发果照，报三围。\n' +
+                               '欢迎关注安全圈微信公众号\n'+
+                               '程程好漂亮!'
                      )
             self.db.defaultmsg.insert(m)
 
