@@ -159,7 +159,7 @@ class Storage2DB():
                                '文明聊(yue)天(pao)'
                      )
             self.db.defaultmsg.insert(m)
-        m7 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuanyanzhidandangqunspanclassemojiemoji1f493span'})
+        m7 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuandeanquan2qun'})
         if m7 == None:
             m = dict(grouppy='anquanjuandeanquan2qun',
                      newmember='这里是 安全圈的安全2群💓"\n' +
