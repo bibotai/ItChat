@@ -170,7 +170,7 @@ class Storage2DB():
                      )
             self.db.defaultmsg.insert(m)
         m8 = self.db.defaultmsg.find_one({'grouppy': 'spanclassemojiemoji1f531spanbutianqunyingbangspanclassemojiemoji1f531span'})
-        if m7 == None:
+        if m8 == None:
             m = dict(grouppy='spanclassemojiemoji1f531spanbutianqunyingbangspanclassemojiemoji1f531span',
                      newmember='这里是 🔱补天群英帮🔱💓"\n' +
                                '进群发红包，发果照，报三围。\n' +
