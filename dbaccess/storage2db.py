@@ -159,13 +159,26 @@ class Storage2DB():
                                '文明聊(yue)天(pao)'
                      )
             self.db.defaultmsg.insert(m)
+
         m7 = self.db.defaultmsg.find_one({'grouppy': 'anquanjuandeanquan2qun'})
         if m7 == None:
             m = dict(grouppy='anquanjuandeanquan2qun',
                      newmember='这里是 安全圈的安全2群💓"\n' +
                                '进群发红包，发果照，报三围。\n' +
-                               '欢迎关注安全圈微信公众号\n'+
+                               '欢迎关注安全圈微信公众号\n' +
                                '程程好漂亮!'
                      )
             self.db.defaultmsg.insert(m)
+        m8 = self.db.defaultmsg.find_one({'grouppy': 'spanclassemojiemoji1f531spanbutianqunyingbangspanclassemojiemoji1f531span'})
+        if m7 == None:
+            m = dict(grouppy='spanclassemojiemoji1f531spanbutianqunyingbangspanclassemojiemoji1f531span',
+                     newmember='这里是 🔱补天群英帮🔱💓"\n' +
+                               '进群发红包，发果照，报三围。\n' +
+                               '欢迎到补天提交漏洞:https://butian.360.cn/\n' +
+                               '欢迎关注补天公众号:Patchingthekey\n\n'+
+                               '缪缪和小花是群里最漂亮的两个人!\n'+
+                               '缪缪和小花辛苦了!\n'+'缪缪和小花记得吃早餐!'
+                     )
+            self.db.defaultmsg.insert(m)
+
 
